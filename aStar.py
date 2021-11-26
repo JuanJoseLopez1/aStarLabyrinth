@@ -46,43 +46,61 @@ def aStar(objMaze):
         varStartCoordinate, (1, 1))
 
     # Cola de prioridad, el menor elemento esta de primero en la lista.
-    open = PriorityQueue()
+    objPriorityQueue = PriorityQueue()
 
     # Se crea una tupla
-    open.put((fFunctionDictionary[varStartCoordinate], distanciaManhattan(
+    objPriorityQueue.put((fFunctionDictionary[varStartCoordinate], distanciaManhattan(
         varStartCoordinate, (1, 1)), varStartCoordinate))
-    aPath = {}
-    while not open.empty():
-        currCell = open.get()[2]
-        if currCell == (1, 1):
+
+    varPathGoaltoStart = {}
+
+    # Recorrer la cola de prioridad
+    while not objPriorityQueue.empty():
+
+        # obtiene la coordenada de inicio
+        varCurrentCoordenate = objPriorityQueue.get()[2]
+        if varCurrentCoordenate == (1, 1):
             break
+        # bucle que recorre una cadena de caracteres
         for d in 'ESNW':
-            if objMaze.maze_map[currCell][d] == True:
+            # Verifica que el camino este disponible, varCurrentCoordenate es la llave y d el valor, .maze_map es un directorio y solo sera igual a True cuando el valor sea 1.
+            if objMaze.maze_map[varCurrentCoordenate][d] == True:
+                # Direcciones posibles de movimiento en el laberinto, E(East), W(West),N(North), S(South).
+                # varCurrentCoordenate[0] = X del tamanio del laberinto
+                # varCurrentCoordenate[1] = Y del tamanio del laberinto
                 if d == 'E':
-                    childCell = (currCell[0], currCell[1]+1)
+                    varChildCoordenate = (
+                        varCurrentCoordenate[0], varCurrentCoordenate[1]+1)
                 if d == 'W':
-                    childCell = (currCell[0], currCell[1]-1)
+                    varChildCoordenate = (
+                        varCurrentCoordenate[0], varCurrentCoordenate[1]-1)
                 if d == 'N':
-                    childCell = (currCell[0]-1, currCell[1])
+                    varChildCoordenate = (
+                        varCurrentCoordenate[0]-1, varCurrentCoordenate[1])
                 if d == 'S':
-                    childCell = (currCell[0]+1, currCell[1])
+                    varChildCoordenate = (
+                        varCurrentCoordenate[0]+1, varCurrentCoordenate[1])
 
-                temp_g_score = gFunctionDictionary[currCell]+1
-                temp_f_score = temp_g_score + \
-                    distanciaManhattan(childCell, (1, 1))
+                varGFunctionValue = gFunctionDictionary[varCurrentCoordenate]+1
+                #funcion f(n) = g(n) + h(n)
+                varFFunctionValue = varGFunctionValue + \
+                    distanciaManhattan(varChildCoordenate, (1, 1))
 
-                if temp_f_score < fFunctionDictionary[childCell]:
-                    gFunctionDictionary[childCell] = temp_g_score
-                    fFunctionDictionary[childCell] = temp_f_score
-                    open.put((temp_f_score, distanciaManhattan(
-                        childCell, (1, 1)), childCell))
-                    aPath[childCell] = currCell
-    fwdPath = {}
-    cell = (1, 1)
-    while cell != varStartCoordinate:
-        fwdPath[aPath[cell]] = cell
-        cell = aPath[cell]
-    return fwdPath
+                #Funcionamiento del algoritmo dependiendo de la f(n).
+                if varFFunctionValue < fFunctionDictionary[varChildCoordenate]:
+                    gFunctionDictionary[varChildCoordenate] = varGFunctionValue
+                    fFunctionDictionary[varChildCoordenate] = varFFunctionValue
+                    objPriorityQueue.put((varFFunctionValue, distanciaManhattan(
+                        varChildCoordenate, (1, 1)), varChildCoordenate))
+                    varPathGoaltoStart[varChildCoordenate] = varCurrentCoordenate
+    #Direcciones de la trayectoria desde el inicio hasta el objetivo.   
+    varPathStartToGoal = {}
+    varCoordenate = (1, 1)
+    while varCoordenate != varStartCoordinate:
+        varPathStartToGoal[varPathGoaltoStart[varCoordenate]] = varCoordenate
+        varCoordenate = varPathGoaltoStart[varCoordenate]
+    #Trayectoria que se enviara al graficador del laberinto
+    return varPathStartToGoal
 
 
 if __name__ == '__main__':
