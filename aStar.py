@@ -62,59 +62,59 @@ def aStar(objMaze):
         if varCurrentCoordenate == (1, 1):
             break
         # bucle que recorre una cadena de caracteres
-        for d in 'ESNW':
-            # Verifica que el camino este disponible, varCurrentCoordenate es la llave y d el valor, .maze_map es un directorio y solo sera igual a True cuando el valor sea 1.
-            if objMaze.maze_map[varCurrentCoordenate][d] == True:
+        for varDirection in 'ESNW':
+            # Verifica que el camino este disponible, varCurrentCoordenate es la llave y varDirection el valor, .maze_map es un directorio y solo sera igual a True cuando el valor sea 1.
+            if objMaze.maze_map[varCurrentCoordenate][varDirection] == True:
                 # Direcciones posibles de movimiento en el laberinto, E(East), W(West),N(North), S(South).
                 # varCurrentCoordenate[0] = X del tamanio del laberinto
                 # varCurrentCoordenate[1] = Y del tamanio del laberinto
-                if d == 'E':
+                if varDirection == 'E':
                     varChildCoordenate = (
                         varCurrentCoordenate[0], varCurrentCoordenate[1]+1)
-                if d == 'W':
+                if varDirection == 'W':
                     varChildCoordenate = (
                         varCurrentCoordenate[0], varCurrentCoordenate[1]-1)
-                if d == 'N':
+                if varDirection == 'N':
                     varChildCoordenate = (
                         varCurrentCoordenate[0]-1, varCurrentCoordenate[1])
-                if d == 'S':
+                if varDirection == 'S':
                     varChildCoordenate = (
                         varCurrentCoordenate[0]+1, varCurrentCoordenate[1])
 
                 varGFunctionValue = gFunctionDictionary[varCurrentCoordenate]+1
-                #funcion f(n) = g(n) + h(n)
+                # funcion f(n) = g(n) + h(n)
                 varFFunctionValue = varGFunctionValue + \
                     distanciaManhattan(varChildCoordenate, (1, 1))
 
-                #Funcionamiento del algoritmo dependiendo de la f(n).
+                # Funcionamiento del algoritmo dependiendo de la f(n).
                 if varFFunctionValue < fFunctionDictionary[varChildCoordenate]:
                     gFunctionDictionary[varChildCoordenate] = varGFunctionValue
                     fFunctionDictionary[varChildCoordenate] = varFFunctionValue
                     objPriorityQueue.put((varFFunctionValue, distanciaManhattan(
                         varChildCoordenate, (1, 1)), varChildCoordenate))
                     varPathGoaltoStart[varChildCoordenate] = varCurrentCoordenate
-    #Direcciones de la trayectoria desde el inicio hasta el objetivo.   
+    # Direcciones de la trayectoria desde el inicio hasta el objetivo.
     varPathStartToGoal = {}
     varCoordenate = (1, 1)
     while varCoordenate != varStartCoordinate:
         varPathStartToGoal[varPathGoaltoStart[varCoordenate]] = varCoordenate
         varCoordenate = varPathGoaltoStart[varCoordenate]
-    #Trayectoria que se enviara al graficador del laberinto
+    # Trayectoria que se enviara al graficador del laberinto
     return varPathStartToGoal
 
 
 if __name__ == '__main__':
-    m = maze(5, 5)
+    m = maze(15, 15)
     m.CreateMaze()
 
     print(m.maze_map)
     print(m.grid)
     path = aStar(m)
 
-    a = agent(m, footprints=True)
-    b = agent(m, footprints=True)
+    a = agent(m, filled=True,footprints=True)
+
     m.tracePath({a: path})
-    m.tracePath({b: m.path})
-    l = textLabel(m, 'A Star Path Length', len(path)+1)
+
+    l = textLabel(m, 'A star, Pasos hasta el agente', len(path)+1)
 
     m.run()
