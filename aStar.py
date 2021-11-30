@@ -131,7 +131,7 @@ if __name__ == '__main__':
 
     while True:
         try:
-            percentage = int(input('Porcentaje de caminos '))
+            percentage = int(input('Porcentaje de caminos: '))
             if percentage < 1 or percentage > 100:
                 raise ValueError
             break
