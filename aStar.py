@@ -127,7 +127,7 @@ if __name__ == '__main__':
             break
 
         except ValueError:
-            print("Valor no aceptado. El valor debe estar entre 1 y el tamaño del laberinto")
+            print("Valor no aceptado. El valor debe ser un entero entre 1 y el tamaño del laberinto")
 
     m = maze(n1, n2)
     m.CreateMaze(x=number1, y=number2)
