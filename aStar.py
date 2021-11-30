@@ -1,3 +1,9 @@
+"""
+License
+https://www.youtube.com/c/LearningOrbis
+Copyright (c) 2021 Muhammad Ahsan Naeem
+mahsan.naeem@gmail.com
+"""
 from pyamaze import maze, agent, textLabel
 from queue import PriorityQueue
 
