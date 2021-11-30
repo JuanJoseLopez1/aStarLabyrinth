@@ -129,8 +129,18 @@ if __name__ == '__main__':
         except ValueError:
             print("Valor no aceptado. El valor debe ser un entero entre 1 y el tamaño del laberinto")
 
+    while True:
+        try:
+            percentage = int(input('Porcentaje de caminos: '))
+            if percentage < 1 or percentage > 100:
+                raise ValueError
+            break
+
+        except ValueError:
+            print("Valor no aceptado. El valor debe ser un entero entre 1 y 100")
+
     m = maze(n1, n2)
-    m.CreateMaze(x=number1, y=number2)
+    m.CreateMaze(x=number1, y=number2, loopPercent=percentage)
 
     print(m.maze_map)
     print(m.grid)
