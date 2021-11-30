@@ -144,12 +144,15 @@ if __name__ == '__main__':
 
     print(m.maze_map)
     print(m.grid)
-    path = a_star(m, number1, number2)
+    path2 = a_star(m, number1, number2)
 
     a = agent(m, filled=True, footprints=True)
+    b = agent(m, footprints=True)
 
-    m.tracePath({a: path})
+    m.tracePath({a: path2})
+    m.tracePath({b: m.path})
 
-    l = textLabel(m, 'A star, Pasos hasta el agente', len(path) + 1)
+    l = textLabel(m, 'A star, Pasos hasta el agente', len(path2) + 1)
+    l2 = textLabel(m, 'BFS, Pasos hasta el agente', len(m.path) + 1)
 
     m.run()
