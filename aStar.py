@@ -2,14 +2,13 @@ from pyamaze import maze, agent, textLabel
 from queue import PriorityQueue
 
 
-def distanciaManhattan(parCoordinate1, parCoordinate2):
+def distancia_manhattan(parCoordinate1, parCoordinate2):
     varX1, varY1 = parCoordinate1
     varX2, varY2 = parCoordinate2
-    return abs(varX1-varX2) + abs(varY1-varY2)
+    return abs(varX1 - varX2) + abs(varY1 - varY2)
 
 
-def aStar(objMaze):
-
+def a_star(objMaze, x, y):
     # Coordenada de inicio, ultima fila y columna del laberinto
     varStartCoordinate = (objMaze.rows, objMaze.cols)
 
@@ -42,15 +41,15 @@ def aStar(objMaze):
     h(n) = Distancia manhattan entre el inicio (10,10) en un laberinto 10x10 y el objetivo ubicado en (1,1).
     Por lo tanto tenemos que f(n) = 0 + h((10,10)(1,1))       
     """
-    fFunctionDictionary[varStartCoordinate] = distanciaManhattan(
-        varStartCoordinate, (1, 1))
+    fFunctionDictionary[varStartCoordinate] = distancia_manhattan(
+        varStartCoordinate, (x, y))
 
     # Cola de prioridad, el menor elemento esta de primero en la lista.
     objPriorityQueue = PriorityQueue()
 
     # Se crea una tupla
-    objPriorityQueue.put((fFunctionDictionary[varStartCoordinate], distanciaManhattan(
-        varStartCoordinate, (1, 1)), varStartCoordinate))
+    objPriorityQueue.put((fFunctionDictionary[varStartCoordinate], distancia_manhattan(
+        varStartCoordinate, (x, y)), varStartCoordinate))
 
     varPathGoaltoStart = {}
 
@@ -59,43 +58,44 @@ def aStar(objMaze):
 
         # obtiene la coordenada de inicio
         varCurrentCoordenate = objPriorityQueue.get()[2]
-        if varCurrentCoordenate == (1, 1):
+        if varCurrentCoordenate == (x, y):
             break
         # bucle que recorre una cadena de caracteres
         for varDirection in 'ESNW':
-            # Verifica que el camino este disponible, varCurrentCoordenate es la llave y varDirection el valor, .maze_map es un directorio y solo sera igual a True cuando el valor sea 1.
-            if objMaze.maze_map[varCurrentCoordenate][varDirection] == True:
+            # Verifica que el camino este disponible, varCurrentCoordenate es la llave y varDirection el valor,
+            # .maze_map es un directorio y solo sera igual a True cuando el valor sea 1.
+            if objMaze.maze_map[varCurrentCoordenate][varDirection]:
                 # Direcciones posibles de movimiento en el laberinto, E(East), W(West),N(North), S(South).
                 # varCurrentCoordenate[0] = X del tamanio del laberinto
                 # varCurrentCoordenate[1] = Y del tamanio del laberinto
                 if varDirection == 'E':
                     varChildCoordenate = (
-                        varCurrentCoordenate[0], varCurrentCoordenate[1]+1)
+                        varCurrentCoordenate[0], varCurrentCoordenate[1] + 1)
                 if varDirection == 'W':
                     varChildCoordenate = (
-                        varCurrentCoordenate[0], varCurrentCoordenate[1]-1)
+                        varCurrentCoordenate[0], varCurrentCoordenate[1] - 1)
                 if varDirection == 'N':
                     varChildCoordenate = (
-                        varCurrentCoordenate[0]-1, varCurrentCoordenate[1])
+                        varCurrentCoordenate[0] - 1, varCurrentCoordenate[1])
                 if varDirection == 'S':
                     varChildCoordenate = (
-                        varCurrentCoordenate[0]+1, varCurrentCoordenate[1])
+                        varCurrentCoordenate[0] + 1, varCurrentCoordenate[1])
 
-                varGFunctionValue = gFunctionDictionary[varCurrentCoordenate]+1
+                varGFunctionValue = gFunctionDictionary[varCurrentCoordenate] + 1
                 # funcion f(n) = g(n) + h(n)
                 varFFunctionValue = varGFunctionValue + \
-                    distanciaManhattan(varChildCoordenate, (1, 1))
+                                    distancia_manhattan(varChildCoordenate, (x, y))
 
                 # Funcionamiento del algoritmo dependiendo de la f(n).
                 if varFFunctionValue < fFunctionDictionary[varChildCoordenate]:
                     gFunctionDictionary[varChildCoordenate] = varGFunctionValue
                     fFunctionDictionary[varChildCoordenate] = varFFunctionValue
-                    objPriorityQueue.put((varFFunctionValue, distanciaManhattan(
-                        varChildCoordenate, (1, 1)), varChildCoordenate))
+                    objPriorityQueue.put((varFFunctionValue, distancia_manhattan(
+                        varChildCoordenate, (1, 5)), varChildCoordenate))
                     varPathGoaltoStart[varChildCoordenate] = varCurrentCoordenate
     # Direcciones de la trayectoria desde el inicio hasta el objetivo.
     varPathStartToGoal = {}
-    varCoordenate = (1, 1)
+    varCoordenate = (x, y)
     while varCoordenate != varStartCoordinate:
         varPathStartToGoal[varPathGoaltoStart[varCoordenate]] = varCoordenate
         varCoordenate = varPathGoaltoStart[varCoordenate]
@@ -104,17 +104,42 @@ def aStar(objMaze):
 
 
 if __name__ == '__main__':
-    m = maze(15, 15)
-    m.CreateMaze()
+
+    while True:
+        try:
+            n1 = int(input('Ingrese número de filas: '))
+            n2 = int(input('Ingrese número de columnas: '))
+        except ValueError:
+            print("No es un entero")
+            continue
+        else:
+            break
+
+    while True:
+        try:
+            number1 = int(input('Fila del objetivo: '))
+            if number1 < 1 or number1 > n1:
+                raise ValueError
+
+            number2 = int(input('Columna del objetivo: '))
+            if number2 < 1 or number2 > n2:
+                raise ValueError
+            break
+
+        except ValueError:
+            print("Valor no aceptado. El valor debe estar entre 1 y el tamaño del laberinto")
+
+    m = maze(n1, n2)
+    m.CreateMaze(x=number1, y=number2)
 
     print(m.maze_map)
     print(m.grid)
-    path = aStar(m)
+    path = a_star(m, number1, number2)
 
-    a = agent(m, filled=True,footprints=True)
+    a = agent(m, filled=True, footprints=True)
 
     m.tracePath({a: path})
 
-    l = textLabel(m, 'A star, Pasos hasta el agente', len(path)+1)
+    l = textLabel(m, 'A star, Pasos hasta el agente', len(path) + 1)
 
     m.run()
